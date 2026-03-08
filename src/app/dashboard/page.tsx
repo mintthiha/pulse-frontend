@@ -9,6 +9,7 @@ import ScenarioList from '@/app/components/ScenarioList';
 import PRSection from '@/app/components/PRSection';
 import { api } from '@/app/lib/api';
 import { Ticket, TestResult, PullRequest, FilteringLogic as FilteringLogicType } from '@/app/types';
+import AuthGuard from '@/app/components/AuthGuard';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -75,58 +76,60 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <Navbar />
+    <AuthGuard>
+      <div className="min-h-screen bg-zinc-950">
+        <Navbar />
 
-      <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
+        <div className="max-w-7xl mx-auto px-8 py-10 space-y-8">
 
-        {/* Ticket Input */}
-        <div className="flex gap-4">
-          <input
-            type="text"
-            value={ticketId}
-            onChange={(e) => setTicketId(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && analyze()}
-            placeholder="Enter Jira Ticket ID (e.g. SCRUM-5)"
-            className="flex-1 bg-zinc-900 border border-zinc-800 text-white font-mono px-5 py-4 text-base focus:outline-none focus:border-zinc-500 transition-colors"
-          />
-          <button
-            onClick={analyze}
-            disabled={loading}
-            className="bg-white text-black font-mono font-bold px-8 py-4 hover:bg-zinc-200 transition-colors disabled:opacity-50"
-          >
-            {loading ? 'ANALYZING...' : 'ANALYZE →'}
-          </button>
-        </div>
-
-        {error && (
-          <p className="text-red-400 text-sm font-mono">{error}</p>
-        )}
-
-        {/* Ticket + Filtering side by side */}
-        {ticket && filtering && (
-          <div className="grid grid-cols-2 gap-6">
-            <TicketView ticket={ticket} />
-            <FilteringLogic
-              filtering={filtering}
-              ticket={ticket}
-              prs={prs}
-              onAIMode={handleAIMode}
+          {/* Ticket Input */}
+          <div className="flex gap-4">
+            <input
+              type="text"
+              value={ticketId}
+              onChange={(e) => setTicketId(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && analyze()}
+              placeholder="Enter Jira Ticket ID (e.g. SCRUM-5)"
+              className="flex-1 bg-zinc-900 border border-zinc-800 text-white font-mono px-5 py-4 text-base focus:outline-none focus:border-zinc-500 transition-colors"
             />
+            <button
+              onClick={analyze}
+              disabled={loading}
+              className="bg-white text-black font-mono font-bold px-8 py-4 hover:bg-zinc-200 transition-colors disabled:opacity-50"
+            >
+              {loading ? 'ANALYZING...' : 'ANALYZE →'}
+            </button>
           </div>
-        )}
 
-        {/* Scenarios */}
-        {filteredScenarios.length > 0 && (
-          <ScenarioList scenarios={filteredScenarios} />
-        )}
+          {error && (
+            <p className="text-red-400 text-sm font-mono">{error}</p>
+          )}
 
-        {/* PRs */}
-        {prs.length > 0 && (
-          <PRSection prs={prs} scenarios={filteredScenarios} />
-        )}
+          {/* Ticket + Filtering side by side */}
+          {ticket && filtering && (
+            <div className="grid grid-cols-2 gap-6">
+              <TicketView ticket={ticket} />
+              <FilteringLogic
+                filtering={filtering}
+                ticket={ticket}
+                prs={prs}
+                onAIMode={handleAIMode}
+              />
+            </div>
+          )}
 
+          {/* Scenarios */}
+          {filteredScenarios.length > 0 && (
+            <ScenarioList scenarios={filteredScenarios} />
+          )}
+
+          {/* PRs */}
+          {prs.length > 0 && (
+            <PRSection prs={prs} scenarios={filteredScenarios} />
+          )}
+
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 }
