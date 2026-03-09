@@ -10,6 +10,7 @@ import PRSection from '@/app/components/PRSection';
 import { api } from '@/app/lib/api';
 import { Ticket, TestResult, PullRequest, FilteringLogic as FilteringLogicType } from '@/app/types';
 import AuthGuard from '@/app/components/AuthGuard';
+import { TicketSkeleton, FilteringSkeleton, ScenarioSkeleton, PRSkeleton } from '@/app/components/Skeleton';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -105,8 +106,15 @@ export default function DashboardPage() {
             <p className="text-red-400 text-sm font-mono">{error}</p>
           )}
 
+          
+
           {/* Ticket + Filtering side by side */}
-          {ticket && filtering && (
+          {loading ? (
+            <div className="grid grid-cols-2 gap-6">
+              <TicketSkeleton />
+              <FilteringSkeleton />
+            </div>
+          ) : ticket && filtering && (
             <div className="grid grid-cols-2 gap-6">
               <TicketView ticket={ticket} />
               <FilteringLogic
@@ -119,12 +127,16 @@ export default function DashboardPage() {
           )}
 
           {/* Scenarios */}
-          {filteredScenarios.length > 0 && (
+          {loading ? (
+            <ScenarioSkeleton />
+          ) : filteredScenarios.length > 0 && (
             <ScenarioList scenarios={filteredScenarios} />
           )}
 
           {/* PRs */}
-          {prs.length > 0 && (
+          {loading ? (
+            <PRSkeleton />
+          ) : prs.length > 0 && (
             <PRSection prs={prs} scenarios={filteredScenarios} />
           )}
 
